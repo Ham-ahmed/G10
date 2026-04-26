@@ -284,13 +284,13 @@ for url in "${DOWNLOAD_URLS[@]}"; do
     print_message $BLUE "> Trying to download from: $url"
     if download_file "$url" "MagicPanelGold_v${version}.tar.gz"; then
         if [ -f "MagicPanelGold_v${version}.tar.gz" ] && [ -s "MagicPanelGold_v${version}.tar.gz" ]; then
-            # Check if it's valid gzip file
-            if file "MagicPanelGold_v${version}.tar.gz" | grep -q "gzip compressed data"; then
+            # التحقق من صحة الملف باستخدام tar بدلاً من file
+            if tar -tzf "MagicPanelGold_v${version}.tar.gz" >/dev/null 2>&1; then
                 DOWNLOAD_SUCCESS=1
-                print_message $GREEN "✓ Download successful from: $url"
+                print_message $GREEN "✓ Download successful and file validated from: $url"
                 break
             else
-                print_message $YELLOW "✗ Downloaded file is not valid gzip format"
+                print_message $YELLOW "✗ Downloaded file is not a valid tar.gz archive"
                 rm -f "MagicPanelGold_v${version}.tar.gz"
             fi
         fi
@@ -319,8 +319,8 @@ if [ $DOWNLOAD_SUCCESS -eq 0 ] || [ ! -f "MagicPanelGold_v${version}.tar.gz" ] |
     exit 1
 fi
 
-# Verify downloaded file integrity
-print_message $BLUE "> Verifying downloaded file..."
+# Verify downloaded file integrity (تحقق إضافي)
+print_message $BLUE "> Verifying downloaded file integrity..."
 
 # Check file size
 FILE_SIZE=$(stat -c%s "MagicPanelGold_v${version}.tar.gz" 2>/dev/null || stat -f%z "MagicPanelGold_v${version}.tar.gz" 2>/dev/null)
