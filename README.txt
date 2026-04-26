@@ -1,4 +1,4 @@
-Magic Panel Gold Version 9.0 Plugin is a new plugin 2026
+Magic Panel Gold Version 10.0 Plugin is a new plugin 2026
 
 of its kind in its design and provides ...............free content
 
