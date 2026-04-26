@@ -1,9 +1,9 @@
 #!/bin/bash
 
-##setup command=wget -q "--no-check-certificate" https://raw.githubusercontent.com/Ham-ahmed/G/refs/heads/main/MagicPanelGold-v9_install.sh -O - | /bin/sh
+##setup command=wget -q "--no-check-certificate" https://raw.githubusercontent.com/Ham-ahmed/G10/refs/heads/main/MagicPanelGold-install.sh -O - | /bin/sh
 
 ######### Only This line to edit with new version ######
-version='9.0'
+version='10.0'
 ##############################################################
 
 TMPPATH=/tmp/MagicPanelGold
@@ -242,7 +242,7 @@ DOWNLOAD_URL="${GITHUB_BASE}/MagicPanelGold_v${version}.tar.gz"
 if ! wget -q --no-check-certificate --timeout=30 --tries=3 "$DOWNLOAD_URL" -O "MagicPanelGold_v${version}.tar.gz"; then
     print_message $RED "> Download failed from: $DOWNLOAD_URL"
     # Try alternative URL
-    ALTERNATE_URL="https://raw.githubusercontent.com/Ham-ahmed/G/refs/heads/main/MagicPanelGold_v9.0_v${version}.tar.gz"
+    ALTERNATE_URL="https://raw.githubusercontent.com/Ham-ahmed/G10/refs/heads/main/MagicPanelGold_v${version}.tar.gz"
     print_message $YELLOW "> Trying alternate URL..."
     if ! wget -q --no-check-certificate --timeout=30 --tries=2 "$ALTERNATE_URL" -O "MagicPanelGold_v${version}.tar.gz"; then
         print_message $RED "> Complete download failure!"
