@@ -143,6 +143,40 @@ check_package() {
     fi
 }
 
+# Function to download with multiple fallback methods
+download_file() {
+    local url=$1
+    local output=$2
+    local max_attempts=3
+    
+    for attempt in $(seq 1 $max_attempts); do
+        print_message $BLUE "> Download attempt $attempt of $max_attempts..."
+        
+        # Try wget
+        if command_exists wget; then
+            if wget -q --no-check-certificate --timeout=30 --tries=2 "$url" -O "$output" 2>/dev/null; then
+                if [ -s "$output" ]; then
+                    return 0
+                fi
+            fi
+        fi
+        
+        # Try curl if wget fails
+        if command_exists curl; then
+            if curl -s --connect-timeout 20 --max-time 30 --insecure "$url" -o "$output" 2>/dev/null; then
+                if [ -s "$output" ]; then
+                    return 0
+                fi
+            fi
+        fi
+        
+        # Wait before retry
+        sleep 2
+    done
+    
+    return 1
+}
+
 # Detect OS type and package manager status
 if [ -f /var/lib/dpkg/status ]; then
     STATUS="/var/lib/dpkg/status"
@@ -236,30 +270,75 @@ fi
 
 echo ""
 
-# Download the plugin
-print_message $BLUE "> Downloading..."
-DOWNLOAD_URL="${GITHUB_BASE}/MagicPanelGold_v${version}.tar.gz"
-if ! wget -q --no-check-certificate --timeout=30 --tries=3 "$DOWNLOAD_URL" -O "MagicPanelGold_v${version}.tar.gz"; then
-    print_message $RED "> Download failed from: $DOWNLOAD_URL"
-    # Try alternative URL
-    ALTERNATE_URL="https://raw.githubusercontent.com/Ham-ahmed/G10/refs/heads/main/MagicPanelGold_v10.0_v${version}.tar.gz"
-    print_message $YELLOW "> Trying alternate URL..."
-    if ! wget -q --no-check-certificate --timeout=30 --tries=2 "$ALTERNATE_URL" -O "MagicPanelGold_v${version}.tar.gz"; then
-        print_message $RED "> Complete download failure!"
-        exit 1
+# Define possible download URLs
+DOWNLOAD_URLS=(
+    "${GITHUB_BASE}/MagicPanelGold_v${version}.tar.gz"
+    "https://raw.githubusercontent.com/Ham-ahmed/G10/refs/heads/main/MagicPanelGold_v${version}.tar.gz"
+    "${GITHUB_BASE}/MagicPanelGold_v${version}.tgz"
+    "https://github.com/Ham-ahmed/G/raw/main/MagicPanelGold_v${version}.tar.gz"
+)
+
+# Try downloading from all URLs
+DOWNLOAD_SUCCESS=0
+for url in "${DOWNLOAD_URLS[@]}"; do
+    print_message $BLUE "> Trying to download from: $url"
+    if download_file "$url" "MagicPanelGold_v${version}.tar.gz"; then
+        if [ -f "MagicPanelGold_v${version}.tar.gz" ] && [ -s "MagicPanelGold_v${version}.tar.gz" ]; then
+            # Check if it's valid gzip file
+            if file "MagicPanelGold_v${version}.tar.gz" | grep -q "gzip compressed data"; then
+                DOWNLOAD_SUCCESS=1
+                print_message $GREEN "✓ Download successful from: $url"
+                break
+            else
+                print_message $YELLOW "✗ Downloaded file is not valid gzip format"
+                rm -f "MagicPanelGold_v${version}.tar.gz"
+            fi
+        fi
     fi
+    sleep 1
+done
+
+# Check if download was successful
+if [ $DOWNLOAD_SUCCESS -eq 0 ] || [ ! -f "MagicPanelGold_v${version}.tar.gz" ] || [ ! -s "MagicPanelGold_v${version}.tar.gz" ]; then
+    print_message $RED "✗ Complete download failure!"
+    print_message $YELLOW "> Possible reasons:"
+    print_message $YELLOW "  1. No internet connection"
+    print_message $YELLOW "  2. GitHub repository is unavailable"
+    print_message $YELLOW "  3. Version $version does not exist"
+    print_message $YELLOW "  4. File is corrupted on server"
+    echo ""
+    print_message $YELLOW "> Troubleshooting steps:"
+    print_message $YELLOW "  1. Check your internet connection"
+    print_message $YELLOW "  2. Verify the version number is correct"
+    print_message $YELLOW "  3. Try downloading manually from GitHub"
+    print_message $YELLOW "  4. Check if the repository is accessible"
+    
+    # Clean up
+    cd /
+    rm -rf "$TMPPATH" > /dev/null 2>&1
+    exit 1
 fi
 
-# Check if file was downloaded
-if [ ! -f "MagicPanelGold_v${version}.tar.gz" ]; then
-    print_message $RED "> Download file doesn't exist!"
+# Verify downloaded file integrity
+print_message $BLUE "> Verifying downloaded file..."
+
+# Check file size
+FILE_SIZE=$(stat -c%s "MagicPanelGold_v${version}.tar.gz" 2>/dev/null || stat -f%z "MagicPanelGold_v${version}.tar.gz" 2>/dev/null)
+if [ "$FILE_SIZE" -lt 1024 ]; then
+    print_message $RED "> Downloaded file is too small ($FILE_SIZE bytes). File may be corrupted!"
+    print_message $RED "> Complete download failure!"
+    cd /
+    rm -rf "$TMPPATH" > /dev/null 2>&1
     exit 1
 fi
 
 # Extract the plugin
 print_message $BLUE "> Extracting files..."
 if ! tar -xzf "MagicPanelGold_v${version}.tar.gz" 2>/dev/null; then
-    print_message $RED "> Failed to extract files!"
+    print_message $RED "> Failed to extract files! Archive may be corrupted."
+    print_message $RED "> Complete download failure!"
+    cd /
+    rm -rf "$TMPPATH" > /dev/null 2>&1
     exit 1
 fi
 
@@ -270,22 +349,28 @@ print_message $BLUE "> Installing plugin..."
 mkdir -p "$PLUGINPATH"
 
 # Look for the plugin files in common directory structures
+FILES_COPIED=0
 if [ -d "MagicPanelGold" ]; then
     cp -rf "MagicPanelGold"/* "$PLUGINPATH"/ 2>/dev/null
+    FILES_COPIED=$?
 elif [ -d "MagicPanelGold-main" ]; then
     if [ -d "MagicPanelGold-main/usr" ]; then
         cp -rf "MagicPanelGold-main/usr"/* "/usr/" 2>/dev/null
+        FILES_COPIED=$?
     else
         cp -rf "MagicPanelGold-main"/* "$PLUGINPATH"/ 2>/dev/null
+        FILES_COPIED=$?
     fi
 elif [ -d "usr" ]; then
     cp -rf "usr"/* "/usr/" 2>/dev/null
+    FILES_COPIED=$?
 else
     # Find and copy all relevant files
     find . -name "*.py" -o -name "*.pyo" -o -name "*.pyc" -o -name "*.so" -o -name "*.png" -o -name "*.xml" -o -name "*.json" | while read -r file; do
         dest_dir="$PLUGINPATH/$(dirname "$file")"
         mkdir -p "$dest_dir"
         cp -f "$file" "$dest_dir/" 2>/dev/null
+        FILES_COPIED=0
     done
     
     # Copy locale files if they exist
