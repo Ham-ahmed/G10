@@ -7,7 +7,7 @@ version='10.0'
 ##############################################################
 
 TMPPATH=/tmp/MagicPanelGold
-GITHUB_BASE="https://raw.githubusercontent.com/Ham-ahmed/G/refs/heads/main"
+GITHUB_BASE="https://raw.githubusercontent.com/Ham-ahmed/G10/refs/heads/main"
 GITHUB_RAW="${GITHUB_BASE}"
 
 # Check architecture and set plugin path
@@ -38,24 +38,17 @@ command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
 
-# Function to restart Enigma2
+# Function to restart Enigma2 safely
 restart_enigma2() {
     print_message $YELLOW "> Restarting Enigma2..."
     sleep 2
     
-    # Try different methods to restart enigma2
     if command_exists systemctl; then
         systemctl restart enigma2
     elif command_exists init; then
         init 4
         sleep 2
         init 3
-    elif command_exists restart; then
-        restart
-    elif command_exists wland; then
-        wland &
-    elif [ -f /etc/rc.local ]; then
-        /etc/rc.local &
     else
         killall -9 enigma2
         sleep 2
@@ -63,46 +56,7 @@ restart_enigma2() {
             enigma2 >/dev/null 2>&1 &
         fi
     fi
-    
-    # Wait a moment to ensure restart starts
     sleep 3
-}
-
-# Function to check for updates
-check_for_updates() {
-    print_message $BLUE "> Checking for updates..."
-    
-    # Try multiple methods to get latest version
-    LATEST_VERSION=$(wget -q --timeout=20 --tries=3 --no-check-certificate -O - "${GITHUB_BASE}/version.txt" 2>/dev/null | head -n 1 | tr -d '\r' | tr -d ' ' | grep -E '^[0-9.]+$')
-    
-    if [ -z "$LATEST_VERSION" ]; then
-        LATEST_VERSION=$(curl -s --connect-timeout 10 --max-time 15 "${GITHUB_BASE}/version.txt" 2>/dev/null | head -n 1 | tr -d '\r' | tr -d ' ' | grep -E '^[0-9.]+$')
-    fi
-    
-    if [ -z "$LATEST_VERSION" ]; then
-        print_message $YELLOW "> Cannot check for updates. Proceeding with installation..."
-        return 1
-    fi
-    
-    # Compare versions
-    if [ "$version" != "$LATEST_VERSION" ]; then
-        echo ""
-        print_message $GREEN "####################################################"
-        print_message $BLUE "#              New version available!               #"
-        printf "${YELLOW}#       Current version: %-23s#${NC}\n" "$version        "
-        printf "${BLUE}#       Latest version: %-27s#${NC}\n" "$LATEST_VERSION    "     
-        print_message $YELLOW "#    Please download latest version from:         #"
-        print_message $BLUE "#      https://github.com/Ham-ahmed/G               #"
-        print_message $GREEN "####################################################"
-        echo ""
-        print_message $YELLOW "> Press Ctrl+C to cancel and download latest version"
-        print_message $YELLOW "> Continuing with current version in 10 seconds..."
-        sleep 10
-        return 0
-    else
-        print_message $GREEN "> You have the latest version ($version)"
-        return 1
-    fi
 }
 
 # Function to install package with error handling
@@ -165,16 +119,16 @@ PYTHON="PY2"
 Packagesix=""
 Packagerequests="python-requests"
 
-if command_exists python3; then
+if command -v python3 >/dev/null 2>&1; then
     print_message $GREEN "> You have Python3 image"
     PYTHON="PY3"
     Packagesix="python3-six"
     Packagerequests="python3-requests"
-elif command_exists python2; then
+elif command -v python2 >/dev/null 2>&1; then
     print_message $GREEN "> You have Python2 image"
     PYTHON="PY2"
     Packagerequests="python-requests"
-elif command_exists python; then
+elif command -v python >/dev/null 2>&1; then
     if python --version 2>&1 | grep -q '^Python 3\.'; then
         print_message $GREEN "> You have Python3 image"
         PYTHON="PY3"
@@ -189,9 +143,6 @@ else
     print_message $RED "> Python not found! Please install Python first."
     exit 1
 fi
-
-# Check for updates before proceeding
-check_for_updates
 
 # Install required packages
 echo ""
@@ -236,18 +187,13 @@ fi
 
 echo ""
 
-# Download the plugin
-print_message $BLUE "> Downloading..."
+# Download the plugin with corrected URL structure
+print_message $BLUE "> Downloading from GitHub..."
 DOWNLOAD_URL="${GITHUB_BASE}/MagicPanelGold_v${version}.tar.gz"
+
 if ! wget -q --no-check-certificate --timeout=30 --tries=3 "$DOWNLOAD_URL" -O "MagicPanelGold_v${version}.tar.gz"; then
     print_message $RED "> Download failed from: $DOWNLOAD_URL"
-    # Try alternative URL
-    ALTERNATE_URL="https://raw.githubusercontent.com/Ham-ahmed/G10/refs/heads/main/MagicPanelGold_v${version}.tar.gz"
-    print_message $YELLOW "> Trying alternate URL..."
-    if ! wget -q --no-check-certificate --timeout=30 --tries=2 "$ALTERNATE_URL" -O "MagicPanelGold_v${version}.tar.gz"; then
-        print_message $RED "> Complete download failure!"
-        exit 1
-    fi
+    exit 1
 fi
 
 # Check if file was downloaded
@@ -263,50 +209,29 @@ if ! tar -xzf "MagicPanelGold_v${version}.tar.gz" 2>/dev/null; then
     exit 1
 fi
 
-# Install the plugin
+# Install the plugin (Improved copy logic)
 print_message $BLUE "> Installing plugin..."
-
-# Create plugin directory
 mkdir -p "$PLUGINPATH"
 
-# Look for the plugin files in common directory structures
-if [ -d "MagicPanelGold" ]; then
-    cp -rf "MagicPanelGold"/* "$PLUGINPATH"/ 2>/dev/null
-elif [ -d "MagicPanelGold-main" ]; then
-    if [ -d "MagicPanelGold-main/usr" ]; then
-        cp -rf "MagicPanelGold-main/usr"/* "/usr/" 2>/dev/null
-    else
-        cp -rf "MagicPanelGold-main"/* "$PLUGINPATH"/ 2>/dev/null
-    fi
-elif [ -d "usr" ]; then
-    cp -rf "usr"/* "/usr/" 2>/dev/null
-else
-    # Find and copy all relevant files
-    find . -name "*.py" -o -name "*.pyo" -o -name "*.pyc" -o -name "*.so" -o -name "*.png" -o -name "*.xml" -o -name "*.json" | while read -r file; do
-        dest_dir="$PLUGINPATH/$(dirname "$file")"
-        mkdir -p "$dest_dir"
-        cp -f "$file" "$dest_dir/" 2>/dev/null
-    done
-    
-    # Copy locale files if they exist
-    if [ -d "locale" ]; then
-        cp -rf "locale" "$PLUGINPATH/../" 2>/dev/null
-    fi
+# Find all files and copy them maintaining structure
+find . -type f \( -name "*.py" -o -name "*.pyo" -o -name "*.pyc" -o -name "*.so" -o -name "*.png" -o -name "*.xml" -o -name "*.json" -o -name "*.txt" -o -name "*.po" -o -name "*.mo" \) | while read -r file; do
+    # Remove leading './'
+    clean_file="${file#./}"
+    dest_dir="$PLUGINPATH/$(dirname "$clean_file")"
+    mkdir -p "$dest_dir"
+    cp -f "$file" "$dest_dir/" 2>/dev/null
+done
+
+# Copy locale directory if it exists
+if [ -d "locale" ]; then
+    cp -rf locale/* "$PLUGINPATH/../" 2>/dev/null
 fi
 
 # Verify installation
 print_message $BLUE "> Verifying installation..."
-
 if [ ! -d "$PLUGINPATH" ] || [ -z "$(ls -A "$PLUGINPATH" 2>/dev/null)" ]; then
-    print_message $YELLOW "> Plugin not found in expected location. Attempting alternative installation..."
-    
-    # Try to find and copy Python files manually
-    find "$TMPPATH" -name "*.py" -exec cp {} "$PLUGINPATH"/ \; 2>/dev/null
-    
-    if [ -z "$(ls -A "$PLUGINPATH" 2>/dev/null)" ]; then
-        print_message $RED "> Installation failed! Could not copy plugin files."
-        exit 1
-    fi
+    print_message $RED "> Installation failed! Could not copy plugin files."
+    exit 1
 fi
 
 # Set correct permissions
@@ -315,7 +240,6 @@ find "$PLUGINPATH" -type f -name "*.py" -exec chmod 644 {} \; 2>/dev/null
 find "$PLUGINPATH" -type f -name "*.pyo" -exec chmod 644 {} \; 2>/dev/null
 find "$PLUGINPATH" -type f -name "*.so" -exec chmod 755 {} \; 2>/dev/null
 find "$PLUGINPATH" -type d -exec chmod 755 {} \; 2>/dev/null
-chmod -R 755 "$PLUGINPATH" 2>/dev/null
 
 # Cleanup
 print_message $BLUE "> Cleaning temporary files..."
@@ -346,7 +270,6 @@ print_message $GREEN "========================================================="
 print_message $YELLOW "===            Restarting Enigma2                     ==="
 print_message $GREEN "========================================================="
 
-# Call restart function
 restart_enigma2
 
 exit 0
