@@ -92,7 +92,7 @@ check_for_updates() {
         printf "${YELLOW}#       Current version: %-23s#${NC}\n" "$version        "
         printf "${BLUE}#       Latest version: %-27s#${NC}\n" "$LATEST_VERSION    "     
         print_message $YELLOW "#    Please download latest version from:         #"
-        print_message $BLUE "#      https://github.com/Ham-ahmed/G               #"
+        print_message $BLUE "#      https://github.com/Ham-ahmed/G10             #"
         print_message $GREEN "####################################################"
         echo ""
         print_message $YELLOW "> Press Ctrl+C to cancel and download latest version"
@@ -275,7 +275,7 @@ DOWNLOAD_URLS=(
     "${GITHUB_BASE}/MagicPanelGold_v${version}.tar.gz"
     "https://raw.githubusercontent.com/Ham-ahmed/G10/refs/heads/main/MagicPanelGold_v${version}.tar.gz"
     "${GITHUB_BASE}/MagicPanelGold_v${version}.tgz"
-    "https://github.com/Ham-ahmed/G/raw/main/MagicPanelGold_v${version}.tar.gz"
+    "https://github.com/Ham-ahmed/G10/raw/main/MagicPanelGold_v${version}.tar.gz"
 )
 
 # Try downloading from all URLs
