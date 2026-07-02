@@ -6,15 +6,12 @@
     "إصلاح مشاكل الاستقرار",
     "تحسين تجربة المستخدم العامة"
   ],
-  "new_features": [
-            "Bitrate-Mod v1.0 New plugin 01-07-2026",   
-            "xportal v3.5 New plugin 01-07-2026", 
-            "panelaio 13.0 New plugin 01-07-2026",
-            "myhybridiptv_2.1-r7 py3.13 New plugin 01-07-2026",   
-            "myhybridiptv_2.1-r7 py3.14 New plugin 01-07-2026", 
-            "hybridiptveditor v1.01 New plugin 01-07-2026",  
-            "bouquetmakerxtream 1.77 New plugin 01-07-2026",     
-            "Wed 01-07-2026 Time 09:10:00",
+  "new_features": [  
+            "15-XPortal playlists 02-07-2026", 
+            "15-xtreamity playlists 02-07-2026", 
+            "15-xklass playlists 02-07-2026",             
+            "FRI 02-07-2026 Time 05:55:00",
+
     ],
     "fixes": [
         "إصلاح مشكلة التحقق من التحديثات",
