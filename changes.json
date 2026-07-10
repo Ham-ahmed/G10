@@ -7,11 +7,13 @@
     "تحسين تجربة المستخدم العامة"
   ],
   "new_features": [  
-            "15-XPortal playlists 02-07-2026", 
-            "15-xtreamity playlists 02-07-2026", 
-            "15-xklass playlists 02-07-2026",             
-            "FRI 02-07-2026 Time 05:55:00",
-
+            "openvix MultiQuickButton 10-07-2026", 
+            "xportal plugin ver4.0 10-07-2026", 
+            "oscamstatus 7.40 plugin 10-07-2026", 
+            "panelaio v13.0.2 plugin 10-07-2026", 
+            "xstreamity 5.55 plugin 10-07-2026", 
+            "bouquetmakerxtream 1.77 plugin 10-07-2026", 
+            "FRI 10-07-2026 Time 05:40:00",  
     ],
     "fixes": [
         "إصلاح مشكلة التحقق من التحديثات",
