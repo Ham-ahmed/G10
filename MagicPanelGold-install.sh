@@ -3,7 +3,7 @@
 ##setup command=wget -q "--no-check-certificate" https://raw.githubusercontent.com/Ham-ahmed/G10/refs/heads/main/MagicPanelGold-install.sh -O - | /bin/sh
 
 ######### Only This line to edit with new version ######
-version='10.0'
+version='11.0'
 ##############################################################
 
 TMPPATH=/tmp/MagicPanelGold
@@ -273,7 +273,7 @@ echo ""
 # Define possible download URLs
 DOWNLOAD_URLS=(
     "${GITHUB_BASE}/MagicPanelGold_v${version}.tar.gz"
-    "https://raw.githubusercontent.com/Ham-ahmed/G10/refs/heads/main/MagicPanelGold_v${version}.tar.gz"
+    "https://https://raw.githubusercontent.com/Ham-ahmed/G10/refs/heads/main/MagicPanelGold_v${version}.tar.gz"
     "${GITHUB_BASE}/MagicPanelGold_v${version}.tgz"
     "https://github.com/Ham-ahmed/G10/raw/main/MagicPanelGold_v${version}.tar.gz"
 )
