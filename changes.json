@@ -7,8 +7,14 @@
     "تحسين تجربة المستخدم العامة"
   ],
   "new_features": [  
-            "‘Uninstaller plugin New 12-07-2026",
-            "Sun 12-07-2026 Time 01:50:00",  
+            "estalker 1.40 plugin 14-07-2026",  
+            "vavoo 1.75 plugin 14-07-2026",  
+            "xstreamity 5.56 plugin 14-07-2026",   
+            "panelaio 14.0.0 plugin 14-07-2026",
+            "E2-Doctor 2.3.0 plugin 14-07-2026",   
+            "XPortal 4.1.0 plugin 14-07-2026", 
+            "ServerColoring 5.0 plugin 14-07-2026",           
+            "Tus 14-07-2026 Time 01:30:00",
     ],
     "fixes": [
         "إصلاح مشكلة التحقق من التحديثات",
