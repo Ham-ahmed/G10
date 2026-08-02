@@ -7,21 +7,8 @@
     "تحسين تجربة المستخدم العامة"
   ],
   "new_features": [  
-            "Dependencies ٍScript 01-08-2026",  
-            "oscamicamdelay ICAMEMU 01-08-2026",  
-            "estalker 1.43 plugin 01-08-2026",
-            "oscam_11966 emu r802 01-08-2026",  
-            "powercam oscam 11966 emu r802 01-08-2026",
-            "ultracam oscam 11966 emu r802 01-08-2026",
-            "supcam oscam 11966 emu r802 01-08-2026", 
-            "gosatplus oscam 11966 emu r802 01-08-2026",  
-            "panelaio 15.0.0 plugin 01-08-2026", 
-            "tivimatee2 1.0.01 plugin 01-08-2026",  
-            "subextractorlite v1.3 armv7 py3.13 01-08-2026", 
-            "subextractorlite v1.0 armv7l py3.14 01-08-2026", 
-            "tivimatee2 1.0.01 plugin 01-08-2026",
-            "TMBD 8.8 r0 by Dima73 01-08-2026",            
-            "Sat 01-08-2026 Time 04:50:00",
+            "MultiQuickButton Py3.14.6 ٍScript openBH6.0 02-08-2026",            
+            "Sun 02-08-2026 Time 04:20:00",
     ],
     "fixes": [
         "إصلاح مشكلة التحقق من التحديثات",
