@@ -14,7 +14,7 @@ of its kind in its design and provides ...............free content
 
 3️⃣ All add-ons are available in the panel... plugins, emotes, skins, etc. The panel provides them without the hassle of searching.
 
-4️⃣ The Gold Edition, version 8.0, is a trial version that I can modify without prior notice.
+4️⃣ The Gold Edition, version 11.0, is a trial version that I can modify without prior notice.
 
 ## image project
 ![image here](https://g.top4top.io/p_37680oykx1.jpg))
