@@ -7,8 +7,11 @@
     "تحسين تجربة المستخدم العامة"
   ],
   "new_features": [  
-            "Global Traslate Max v8.5.3 py 3.14.6-7 23-09-2026",             
-            "WED 21-23-2026 Time 04:00:00", ,   
+            "Global Translat Max Grid v8.5.4 py 3.14.6-7 28-09-2026",    
+            "Global Translat Max Grid v8.5.5 py 3.13 28-09-2026", 
+            "Global Translat Max List v8.5.4 py 3.14.6-7 28-09-2026", 
+            "Global Translat Max List v8.5.5 py 3.13 28-09-2026",             
+            "Mon 28-09-2026 Time 12:30:00", 
     ],
     "fixes": [
         "إصلاح مشكلة التحقق من التحديثات",
